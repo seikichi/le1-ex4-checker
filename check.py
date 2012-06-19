@@ -14,7 +14,7 @@ MAX_VALUE = 9999
 # オプション設定
 parser = OptionParser()
 parser.add_option("-d", "--delimiter", dest="delimiter", default="\n",
-                  help=u"最初に読み込む10個の自然数について区切り子を指定します．(デフォルトは '\n')")
+                  help=u"最初に読み込む10個の自然数について区切り子を指定します")
 parser.add_option("-l", "--leak-check", dest="leack_check", default=False,
                   action="store_true", help=u"valgrind でメモリリークをチェックします")
 options, args = parser.parse_args()

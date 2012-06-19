@@ -1,26 +1,39 @@
-#############################################
+######################
 le1-ex4-checker
-#############################################
+######################
 
-インストール
-===============
-Python (2.5以上3未満) が必要です
+What' this?
+=============
+実験1課題4のチェッカ
 
-使い方
-===============
+How to use
+=============
+Run
+-------------
 ::
-        $ ./check.py [OPTIONS] SOURCE
 
-OPTIONS には以下のようなオプションを指定できます．
+        % ./check.py [OPTIONS] SOURCE
+
+
+Option
+-------------
 ::
-          -h, --help            show this help message and exit
-          -d DELIMITER, --delimiter=DELIMITER
-                                最初に読み込む10個の自然数について区切り子を指定します．
-          -l, --leak-check      valgrind でメモリリークチェックします
 
-SOURCE には検査するソースコードのファイル名を指定します．
+        -h, --help            show this help message and exit
+        -d DELIMITER, --delimiter=DELIMITER
+                              最初に読み込む10個の自然数について区切り子を指定します．
+        -l, --leak-check      valgrind でメモリリークをチェックします
 
 
-注意
-===============
-出力に余分な改行があると動かないかも．ソースいじって出力が21行になるように限定しちゃった方が安全……．
+Requirements
+=============
+- python (>= 2.6)
+
+Note
+=============
+- 出力に余分な改行が含まれていると死ぬかも
+- ソースいじってstdoutへの出力が print_list 21回分のみになるように調整した方が安全かも
+
+Author
+=============
+- seikichi@kmc.gr.jp
