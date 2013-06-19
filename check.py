@@ -3,34 +3,35 @@
 
 import sys
 import re
-from random import randint
-from optparse import OptionParser
-from subprocess import Popen, STDOUT, PIPE
+
 from commands import getstatusoutput
+from optparse import OptionParser
+from random import randint
+from subprocess import Popen, STDOUT, PIPE
 
 MIN_VALUE = 1
 MAX_VALUE = 9999
 
 # オプション設定
 parser = OptionParser()
-parser.add_option("-d", "--delimiter", dest="delimiter", default="\n",
-                  help=u"最初に読み込む10個の自然数について区切り子を指定します")
-parser.add_option("-l", "--leak-check", dest="leack_check", default=False,
-                  action="store_true", help=u"valgrind でメモリリークをチェックします")
+parser.add_option('-d', '--delimiter', dest='delimiter', default='\n',
+                  help=u'最初に読み込む10個の自然数の区切り子を指定します')
+parser.add_option('-l', '--leak-check', dest='leack_check', default=False,
+                  action='store_true', help=u'valgrind でメモリリークをチェックします')
 options, args = parser.parse_args()
 
 if not args:
-    print >>sys.stderr, "check.py [options] source-code"
+    print >>sys.stderr, 'check.py [options] source-code'
     exit(-1)
 source = args[0]
 
 # ソースをコンパイル (エラーなら終了)
 status, output = getstatusoutput('LANG=C gcc -Wall -Wextra %s' %  source)
 if status:
-    print >>sys.stderr, "[Compile Error]"
+    print >>sys.stderr, '[Compile Error]'
     print >>sys.stderr, output
     exit(-1)
-print >>sys.stderr, "[Compile Succceeded (%d warnings)]" % output.count('warning')
+print >>sys.stderr, '[Compile Succceeded (%d warnings)]' % output.count('warning')
 
 # テストケース生成
 testcases = [
@@ -66,14 +67,14 @@ def delete(x, l):
 
 leak = False
 pat = re.compile(r'^((\d+)\s*)*$')
-result = "Accepted"
+result = 'Accepted'
 
 for i, testcase in enumerate(testcases):
-    print "Case %d:" % (i+1),
+    print 'Case %d:' % (i+1),
     ok = True
 
     # プロセスに与える入力を作成
-    input = ""
+    input = ''
     input += options.delimiter.join(map(str, testcase[0:10])) + '\n'
     input += '\n'.join(map(str, testcase[10:30])) + '\n'
 
@@ -83,22 +84,24 @@ for i, testcase in enumerate(testcases):
     output, _ = proc.communicate()
     # 実行時エラー？
     if proc.returncode:
-        print "Runtime Error"
-        result = "Runtime Error"
+        print 'Runtime Error'
+        print '\tinput: %s' % repr(input)
+        result = 'Runtime Error'
         break
 
     def check(expected, actual, error_type):
         if expected != actual:
-            print "Wrong Answer (%s error)" % error_type
-            print "\texpected: %s" % repr(expected)
-            print "\t but was: %s" % repr(actual)
+            print 'Wrong Answer (%s error)' % error_type
+            print '\texpected: %s' % repr(expected)
+            print '\t but was: %s' % repr(actual)
             return False
         else: return True
 
     ls = []
     for line in output.split('\n'):
         line = line.strip()
-        if pat.match(line): ls.append(map(int, line.split()))
+        if pat.match(line):
+          ls.append(map(int, line.split()))
 
     # 入力の最初の10個から開始して
     l = testcase[0:10]
@@ -116,23 +119,26 @@ for i, testcase in enumerate(testcases):
         ok = check(l, ls[1+10+i], 'delete')
 
     if not ok:
-        result = "Wrong Answer"
+        result = 'Wrong Answer'
         break
 
-    res = "Passed"
+    res = 'Passed'
     if options.leack_check:
         # valgrind で再チェック
-        proc = Popen(['valgrind', '--leak-check=full', './a.out'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+        proc = Popen(['valgrind', '--leak-check=full', './a.out'],
+                     stdin=PIPE, stdout=PIPE, stderr=STDOUT)
         print >>proc.stdin, input
         output = proc.communicate()[0]
         if int(re.search(r'(\d+)\s+errors', output).group(1)):
             leak = True
-            res = "Memory Leak"
+            res = 'Error in valgrind'
     print res
+    if res != 'Passed':
+      print '\tinput:%s' % repr(input)
 
 # 結果を出力
 if leak:
-    result += "(!!! Memory Leak !!!)"
-print "\n!!!%s!!!" % result
+    result += '(Error in valgrind)'
+print 'Result: %s!!!' % result
 
 
