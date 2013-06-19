@@ -39,14 +39,14 @@ testcases = [
     [MAX_VALUE] * 30,
 ]
 
+# ランダムだと delete が発生しにくいので，範囲を絞って1000個
+for i in range(300):
+    testcases.append([randint(MIN_VALUE, MIN_VALUE+10) for _ in range(30)])
+for i in range(300):
+    testcases.append([randint(MAX_VALUE-20, MAX_VALUE) for _ in range(30)])
 # とりあえず100個ランダムに
 for i in range(100):
     testcases.append([randint(MIN_VALUE, MAX_VALUE) for _ in range(30)])
-# ランダムだと delete が発生しにくいので，範囲を絞って1000個
-for i in range(500):
-    testcases.append([randint(MIN_VALUE, MIN_VALUE+10) for _ in range(30)])
-for i in range(500):
-    testcases.append([randint(MAX_VALUE-20, MAX_VALUE) for _ in range(30)])
 
 # 解をチェックするために insert と delete を作っとく
 def insert(x, l):
@@ -94,6 +94,7 @@ for i, testcase in enumerate(testcases):
             print 'Wrong Answer (%s error)' % error_type
             print '\texpected: %s' % repr(expected)
             print '\t but was: %s' % repr(actual)
+            print '\tinput:%s' % repr(input)
             return False
         else: return True
 
@@ -134,7 +135,7 @@ for i, testcase in enumerate(testcases):
             res = 'Error in valgrind'
     print res
     if res != 'Passed':
-      print '\tinput:%s' % repr(input)
+        print '\tinput:%s' % repr(input)
 
 # 結果を出力
 if leak:
