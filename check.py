@@ -66,12 +66,14 @@ def delete(x, l):
     return ret
 
 leak = False
+wrong_output_num = False
 pat = re.compile(r'^((\d+)\s*)*$')
 result = 'Accepted'
 
 for i, testcase in enumerate(testcases):
     print 'Case %d:' % (i+1),
     ok = True
+    res = 'Passed'
 
     # プロセスに与える入力を作成
     input = ''
@@ -104,6 +106,14 @@ for i, testcase in enumerate(testcases):
         if pat.match(line):
           ls.append(map(int, line.split()))
 
+    # 出力の行数が足りてない場合は
+    # 「deleteで空になったら終了するプログラム」だと見なす
+    if len(ls) != 21:
+        wrong_output_num = True
+        while len(ls) <= 21:
+            ls.append([])
+        res = 'Presentation Error'
+
     # 入力の最初の10個から開始して
     l = testcase[0:10]
     ok = check(l, ls[0], 'initialize')
@@ -123,7 +133,6 @@ for i, testcase in enumerate(testcases):
         result = 'Wrong Answer'
         break
 
-    res = 'Passed'
     if options.leack_check:
         # valgrind で再チェック
         proc = Popen(['valgrind', '--leak-check=full', './a.out'],
@@ -134,12 +143,15 @@ for i, testcase in enumerate(testcases):
             leak = True
             res = 'Error in valgrind'
     print res
-    if res != 'Passed':
+    if res not in  ('Passed', 'Presentation Error'):
         print '\tinput:%s' % repr(input)
 
 # 結果を出力
 if leak:
-    result += '(Error in valgrind)'
+    result += ' (Error in valgrind) '
+if wrong_output_num:
+    result += ' (Presentation Error!)'
+
 print 'Result: %s!!!' % result
 
 
